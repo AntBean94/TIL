@@ -7,26 +7,55 @@
             도커 학습 내용 정리
         </h1>
         <h3>
-            1. 
+            등장
         </h3>
         <textarea name="" id="" cols="30" rows="10">
+            복잡하고 어려운 서버관리를 편하게 할 수 있는 방법이 없을까?
 
+            도커는 2013년 pycon - The future of Linux Containers 세션에서
+            처음으로 모습을 드러냈다.
+
+            도커는 컨테이너 기반의 오픈소스 가상화 플랫폼이다.
+            컨테이너라는 이름처럼 다양한 프로그램, 실행환경을 추상화하고
+            동일한 인터페이스를 제공해 프로그램의 배포 및 관리를 단순하게 해준다.
         </textarea>
         <h3>
-            2. 
+            용어
         </h3>
         <textarea name="" id="" cols="30" rows="10">
-            
-        </textarea>        <h3>
-            3. 
+            1. 컨테이너
+            컨테이너는 격리된 공간에서 프로세스가 동작하는 기술이다.
+            OS를 가상화하는 기존의 방식과 달리 프로세스를 격리하는 방식으로
+            매우 가볍게 동작한다.
+
+            2. 이미지
+            컨테이너 실행에 필요한 파일과 설정값들을 포함하고 있는 것
+            상태값을 가지지 않으며 변하지 않는다.
+            Docker Hub에서 받을 수 있다.(공개된 이미지)
+
+            3. 호스트
+            컨테이너가 동작하는 컴퓨터
+
+            4. Dockerfile
+            이미지를 만들기 위해 자체 DSL언어를 사용하여
+            이미지 생성과정을 적은 것
+        </textarea>        
+        <h3>
+            컨테이너 Run
         </h3>
         <textarea name="" id="" cols="30" rows="10">
+            아파치 서버를 실행한다면
+            docker run httpd
             
-        </textarea>        <h3>
-            4. 
+            내 컴퓨터의 특정 포트와 도커 컨테이너의 가상포트를 연결할때(포트 포워딩)
+            내 포트: 도커 포트
+            docker run -p 8000:80 httpd
+        </textarea>        
+        <h3>
+            호스트와 컨테이너의 파일 시스템 연결
         </h3>
         <textarea name="" id="" cols="30" rows="10">
-            
+            docker run -p [portnum: portnum] -v [내폴더 경로]:[도커 이미지 경로] httpd
         </textarea>
     </body>
 </html>
