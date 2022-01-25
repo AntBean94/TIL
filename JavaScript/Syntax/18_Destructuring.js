@@ -38,11 +38,13 @@ var { language, position, area, hobby, age } = gaudi
 
 // 뷰엑스에 적용하는 구조 분해 문법 1
 // actions 속성은 모두 context라는 인자를 받는다.
+/*
 actions: {
     fetchData({ commit }) {
         commit('developProducts');
     }
 }
+*/
 // context라는 객체에 commit 속성이 있으므로 위와같이 사용
 
 // 뷰에 적용하는 구조 분해 문법 1
