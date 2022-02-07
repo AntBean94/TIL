@@ -2,17 +2,20 @@
   <div id="app">
     HelloWorld!
     <axios></axios>
+    <tab-container></tab-container>
   </div>
 </template>
 
 <script>
 
 import axios from '@/components/axios'
+import TabContainer from './components/TabContainer.vue'
 
 export default {
   name: 'App',
   components: {
-    axios
+    axios,
+    TabContainer
   }
 }
 </script>
