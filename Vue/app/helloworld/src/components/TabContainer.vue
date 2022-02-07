@@ -17,6 +17,7 @@
 
 <script>
 import ButtonTab from './ButtonTab.vue'
+
 export default {
     components: {
         ButtonTab
