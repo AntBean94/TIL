@@ -3,6 +3,9 @@
     HelloWorld!
     <axios></axios>
     <tab-container></tab-container>
+    <br>
+    <hr>
+    <flexbox></flexbox>
   </div>
 </template>
 
@@ -10,12 +13,14 @@
 
 import axios from '@/components/axios'
 import TabContainer from './components/TabContainer.vue'
+import Flexbox from './components/Flexbox'
 
 export default {
   name: 'App',
   components: {
     axios,
-    TabContainer
+    TabContainer,
+    Flexbox,
   }
 }
 </script>
