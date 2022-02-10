@@ -21,6 +21,14 @@ import ButtonTab from './ButtonTab.vue'
 export default {
     components: {
         ButtonTab
+    },
+    created() {
+        this.check()
+    },  
+    methods: {
+        check: () => {
+            console.log('체크')
+        }
     }
 }
 </script>

@@ -2,26 +2,23 @@
   <div id="app">
     HelloWorld!
     <axios></axios>
-    <tab-container></tab-container>
     <br>
+    <router-link to="/tab">tab 이동</router-link>
+    <router-link to="/flexbox">플렉스 박스</router-link>
     <hr>
-    <flexbox></flexbox>
+    <router-view></router-view>
   </div>
 </template>
 
 <script>
 
 import axios from '@/components/axios'
-import TabContainer from './components/TabContainer.vue'
-import Flexbox from './components/Flexbox'
 
 export default {
   name: 'App',
   components: {
     axios,
-    TabContainer,
-    Flexbox,
-  }
+  },
 }
 </script>
 
