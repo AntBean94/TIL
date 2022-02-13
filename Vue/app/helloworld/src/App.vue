@@ -3,8 +3,12 @@
     HelloWorld!
     <axios></axios>
     <br>
-    <router-link to="/tab">tab 이동</router-link>
-    <router-link to="/flexbox">플렉스 박스</router-link>
+    <router-link to="/tab" @click.native="changeValue(true)">tab 이동</router-link>
+    <br>
+    <router-link to="/flexbox" @click.native="changeValue(false)">플렉스 박스</router-link>
+    <br>
+    <progress v-if="value" value="50" min="0" max="100"></progress>
+    <progress v-else value="100" min="0" max="100"></progress>
     <hr>
     <router-view></router-view>
   </div>
@@ -19,6 +23,17 @@ export default {
   components: {
     axios,
   },
+  data() {
+    return {
+      value: true,
+    }
+  },
+  methods: {
+    changeValue(value) {
+      console.log(value)
+      this.value = value
+    }
+  }
 }
 </script>
 
