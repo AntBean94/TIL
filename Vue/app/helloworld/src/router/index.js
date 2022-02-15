@@ -14,6 +14,11 @@ const routes = [
     { 
         path: '/flexbox', 
         component: Flexbox 
+    },
+    {
+        path: '/vslot',
+        // 이런 문법도 있음
+        component: () => import('@/components/SlotContainer')
     }
 ]
 
