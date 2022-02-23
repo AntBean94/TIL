@@ -175,11 +175,218 @@ console.log(choco, navi);
 ### 명시적으로 this를 바인딩하는 방법
 
 **call 메서드**
+```javascript
+Function.prototype.call(thisArg[, arg1[, arg2[, ...]]])
+```
+call 메서드는 메서드의 호출 주체인 함수를 즉시 실행하도록 하는 명령이다.
+이 때 call 메서드의 첫 번재 인자를 this로 바인딩하고, 이후의 인자들을 호출할 함수의 매개변수로 한다.
+함수를 그냥 실행하면 this는 전역객체를 참조하지만 call 메서드를 이용하면 임의의 객체를 this로 지정할 수 있다.
+
+예제
+```javascript
+var func = function (a, b, c) {
+    console.log(this, a, b, c)
+}
+
+func(1, 2, 3);                  // Window{ ... } 1 2 3
+func.call({ x : 1}, 1, 2, 3);   // { x : 1 } 1 2 3
+```
+함수와 마찬가지로 메서드를 호출할때 역시 call 메서드를 활용하면 메서드를 특정 객체에 바인딩 할 수 있다.
+```javascript
+var obj1 = {
+    a: 1,
+    method: function (x, y) {
+        console.log(this. a, x, y)
+    }
+}
+
+obj1.method(1, 2);                  // 1 1 2
+obj1.method.call({ a: 4 }, 3, 4);   // 4 3 4
+```
 
 **apply 메서드**
+```javascript
+Function.prototype.apply(thisArg[, argsArray])
+```
+apply 메서드는 call 메서드와 기능적으로 완전히 동일하며 인자를 받는 방식에서만 차이가 있다.
+call 메서드는 첫 번째 인자를 제외한 나머지 모든 인자들을 호출할 함수의 매개변수로 지정하는 반면,
+apply 메서드는 두 번째 인자를 **배열**로 받아 그 배열의 요소들을 호출할 함수의 매개변수로 지정한다.
+
+예제
+```javascript
+var func = function (a, b, c) {
+    console.log(this, a, b, c);
+}
+func.apply({ x: 1 }, [1, 2, 3]); // { x: 1 } 1 2 3
+```
+
+**call/apply 메서드의 활용**
+1. 유사배열객체(array-like object)에 배열 메서드를 적용
+객체에는 배열 메서드를 직접 적용할 수 없지만 **키가 0 또는 양의 정수인 프로퍼티가 존재**하고
+**lenth 프로퍼티의 값이 0 또는 양의 정수**인 객체, 즉 배열의 구조와 유사한 객체의 경우(유사배열객체)
+call 또는 apply 메서드를 이용해 배열 메서드를 차용할 수 있다.
+
+```javascript
+var obj = {
+    0: "a",
+    1: "b",
+    2: "c",
+    lenth: 3
+};
+Array.prototype.push.call(obj, 'd');
+console.log(obj);   // { 0: "a", ..., 3: "d", lenth: 4 }
+
+var arr = Array.prototype.slice.call(obj);
+console.log(arr);   // ['a', ..., 'd' ] - slice 메서드는 배열을 반환
+```
+이외에도 함수 내부에서 접근이 가능한 **'arguments'**객체와 `querySelectorAll`, 
+`getElementsByClassName` 등의 Node 선택자로 선택한 결과인 NodeList 등에 적용이 가능하다.
+배열처럼 인덱스와 length 프로퍼티를 가진 문자열에도 적용이 가능하다. 단, 문자열의 경우 length 프로퍼티가
+'읽기'전용이기 때문에 원본 문자열에 변경을 가하는 메서드(push, pop, shift 등)는 에러를 던지며, concat처럼
+대상이 반드시 배열이어야 하는 경우에 에러는 나지 않지만 제대로 된 결과를 얻을 수 없다.
+
+ES6에는 유사배열객체 또는 순회 가능한 모든 종류의 데이터 타입을 배열로 전환하는 Array.from 메서드를 새로
+도입했다.
+```javascript
+var obj = {
+    0: 'a',
+    1: 'b',
+    2: 'c',
+    length: 3
+};
+var arr = Array.from(obj);
+console.log(arr);           // ['a', 'b', 'c']
+```
+
+2. 생성자 내부에서 다른 생성자 호출
+생성자 내부에 다른 생성자와 공통된 내용이 있을 경우 call 또는 apply를 이용해 다른 
+생성자를 호출하면 반복을 줄일 수 있다.
+```javascript
+function Person(name, gender) {
+    this.name = name;
+    this.gender = gender;
+};
+
+function Student(name, gender, school) {
+    Person.call(this, name, gender);
+    this.school = school;
+}
+
+function Employee(name, gender, company) {
+    Person.call(this, name, gender);
+    this.company = company;
+}
+var gd = new Student('가우디', 'female', '한국대')
+var ct = new Employee('캐슬', 'male', '엔프')
+```
+
+3. 여러 인수를 묶어 하나의 배열로 전달하고 싶을 때 - apply 활용
+여러 개의 인수를 받는 메서드에게 하나의 배열로 인수들을 전달하고 싶을 때 apply 메서드를 사용하면
+편리하다.
+```javascript
+var numbers = [10, 20, 30];
+var max = Math.max.apply(null, numbers);
+var min = Math.min.apply(null, numbers);
+console.log(numbers);
+
+// ES6 펼치기 연산자는 더 간편하다.
+var numbers = [10, 20, 30];
+var max = Math.max(...numbers);
+var min = Math.min(...numbers);
+```
+call / apply 메서드는 명시적으로 별도의 this를 바인딩하면서 함수 또는 메서드를 실행하는
+좋은 방법이지만 오히려 이로인해 this를 예측하기 어렵게 만들수도 있기 때문에 코드 해석에 방해가
+될 수 있다.
 
 **bind 메서드**
+```javascript
+Function.prototype.bind(thisArg[, arg1[, arg2[, ...]]])
+```
+bind 메서드는 ES5에서 추가된 기능으로, call과 비슷하지만 즉시 호출하지는 않고 넘겨받은
+this 및 인수들을 바탕으로 새로운 함수를 반환하기만 하는 메서드이다.
+다시 새로운 함수를 호출할 때 인수를 넘기면 그 인수들은 기존 bind 메서드를 호출할 때 전달했던
+인수들의 뒤에 이어서 등록된다. 
+즉, **bind 메서드는 함수에 this를 미리 적용하는 것과 부분 적용함수를 구현하는 두 가지 목적**을 모두 지닌다.
+```javascript
+var func = function (a, b, c) {
+    console.log(this, a, b, c);
+};
+func(1, 2, 3);
+
+var bindFunc1 = func.bind({ x: 1 });
+bindFunc1(5, 6, 7);      // { x: 1 } 5 6 7
+
+var bindFunc2 = func.bind({ x: 3 }, 4, 5);
+bindFunc2(9);            // { x: 3 } 4 5 9 
+```
+
+bind 메서드를 적용해서 새로 만든 함수는 name 프로퍼티에 동사 bind의 수동태인 'bound'라는 접두어가 붙는다.
+이를 통해 원본 메서드에 bind를 적용한 함수라는 것을 쉽게 추적할 수 있다.
+
+apply, call, bind 등의 메서드를 활용하면 상위 컨텍스트의 this를 우회할 필요없이 바인딩 할 수 있다.
+```javascript
+var obj = {
+    outer: function () {
+        console.log(this);
+        // call
+        var innerFunc = function () {
+            console.log(this);
+        };
+        innerFunc.call(this);
+
+        // bind
+        var innerFunc = function () {
+            console.log(this);
+        }.bind(this);
+        innerFunc();
+    }
+}
+obj.outer();
+```
+또한 콜백함수에도 bind 메서드를 사용해 특정 객체에 this를 바인딩 할 수 있다.
 
 **arrow function**
+ES6에서 새롭게 도입되었으며 실행 컨텍스트 생성 시 this를 바인딩 하는 과정 자체가 없다.
+즉, 이 함수 내부에는 this가 아예 없으며, 접근하고자 하면 스코프체인상 가장 가까운 this에 
+접근하게 된다.
 
 **별도의 인자로 this를 받는 경우**
+콜백 함수를 인자로 받는 메서드 중 일부는 추가로 this로 지정할 객체(thisArg)를
+인자로 지정할 수 있는 경우가 있다. 이러한 메서드의 thisArg 값을 지정하면 콜백 함수 내부에서
+this 값을 원하는 대로 변경할 수 있다.
+이러한 형태는 여러 내부 요소에 대해 같은 동작을 반복 수행해야 하는 **배열 메서드**에 많이 있으며,
+ES6에서 새로 등장한 Set, Map등의 메서드에도 일부 존재한다.
+
+```javascript
+var report = {
+    sum: 0,
+    count: 0,
+    add: function () {
+        var args = Array.prototype.slice.call(arguments);
+        args.forEach(function (entry) {
+            this.sum += entry;
+            ++this.count;
+        }, this);
+    },
+    average: function () {
+        return this.sum / this.count;
+    }
+};
+report.add(60, 85, 95);
+console.log(report.sum, report.count, report.average());
+```
+
+이외에도 thisArg를 인자로 받는 메서드를 정리하면 다음과 같다.
+```javascript
+Array.prototype.forEach(callback[, thisArg])
+Array.prototype.map(callback[, thisArg])
+Array.prototype.filter(callback[, thisArg])
+Array.prototype.some(callback[, thisArg])
+Array.prototype.every(callback[, thisArg])
+Array.prototype.find(callback[, thisArg])
+Array.prototype.findIndex(callback[, thisArg])
+Array.prototype.flatMap(callback[, thisArg])
+Array.prototype.from(callback[, thisArg])
+Set.prototype.forEach(callback[, thisArg])
+Map.prototype.forEach(callback[, thisArg])
+```
