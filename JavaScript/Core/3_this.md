@@ -173,3 +173,13 @@ console.log(choco, navi);
 ```
 
 ### 명시적으로 this를 바인딩하는 방법
+
+**call 메서드**
+
+**apply 메서드**
+
+**bind 메서드**
+
+**arrow function**
+
+**별도의 인자로 this를 받는 경우**
