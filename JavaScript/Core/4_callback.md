@@ -10,4 +10,13 @@ callback은 '부르다', '호출(실행)하다'는 의미인 call과, '뒤돌아
 콜백 함수를 위임받은 코드는 자체적인 내부 로직에 의해 이 콜백 함수를 적절한 시점에 실행한다.
 
 **호출 시점**
-
+콜백함수 예제
+```javascript
+var count = 0;
+var timer = scope.setInterval(function () {
+    console.log(count);
+    if (++count > 4) clearInterval(timer);
+}, 300);
+```
+scope에는 Window 객체 또는 Worker의 인스턴스가 들어올 수 있다. 두 객체 모두 setInterval 메서드를
+지원하기 때문이며, 일반적인 브라우저 환경에서는 window를 생략해서 함수처럼 사용이 가능하다.
