@@ -130,8 +130,113 @@ outer = null;           // outer 식별자의 inner 함수 참조를 끊음
 
 ### 클로저 활용 사례
 #### 1.콜백 함수 내부에서 외부 데이터를 사용하고자 할 때
+**콜백 함수와 클로저(1)**
+```javascript
+// --- 모든 예제 공통 코드 ---
+var fruits = ['banana', 'apple', 'peach'];
+var $ul = document.createElement('ul');
+// -----------------------
+
+fruits.forEach(function (fruit) {                   // (A)
+    var $li = document.createElement('li');
+    $li.innerText = fruit;
+    $li.addEventListener('click', function () {     // (B)
+        alert('your choice is ' + fruit);
+    });
+    $ul.appendChild($li);
+});
+document.body.appendChild($ul);
+```
+콜백 함수 (B)에는 fruit이라는 외부 변수를 참조하고 있으므로 클로저가 존재한다. (A)의 종료 여부와 부관하게 클릭 이벤트에 의해 각 컨텍스트의 (B)가 실행될 때는 (B)의 outerEnvironmentReference가 (A)의 LexicalEnvironment를 참조하므로 fruit에 대해서는 (A)가 종료된 후에도 GC대상에서 제외되어 계속 참조가 가능하다.
+
+**콜백 함수와 클로저(2)**
+```javascript
+var alertFruit = function (fruit) {
+    alert('your choice is' + fruit);
+};
+fruits.forEach(function (fruit) {
+    var $li = document.createElement('li');
+    $li.innerText = fruit;
+    $li.addEventListener('click', alertFruit);
+    $ul.appendChild($li);
+});
+document.body.appendChild($ul);
+
+alertFruit(fruits[1]);
+```
+`alertFruit(fruits[1])`에서는 정상적으로 'apple'에 대한 알럿이 실행되는것에 반해 각 `li`를 클릭하면 대상의 과일명이 아닌 [object MouseEvent]라는 값이 출력된다. 이는 콜백 함수의 인자에 대한 제어권을 addEventListener가 가지기 때문이며, addEventListener는 콜백 함수를 호출할 때 첫 번째 인자에 '이벤트 객체'를 주입하기 때문이다. 이는 bind메서드를 활용하면 해결할 수 있다.
+
+**콜백 함수와 클로저(3)**
+```javascript
+fruits.forEach(function (fruit) {
+    var $li = document.createElement('li');
+    $li.innerText = fruit;
+    $li.addEventListener('click', alertFruit.bind(null, fruit));
+    $ul.appendChild($li);
+});
+```
+예제와 같이 bind 메서드를 사용해서 위의 문제를 해결할 수 있지만 이벤트 객체가 인자로 넘어오는 순서가 바뀌는 점과 함수 내부에서의 this가 원래의 그것과 달라지는 점을 감안해야 한다.(?)
+이런 변경사항이 발생하지 않게 하려면 '고차함수'를 활용하는 방법이 있으며 함수형 프로그래밍에서 자주 사용하는 방식이다.
+
+**콜백 함수와 클로저(4)**
+```javascript
+var alertFruitBuilder = function (fruit) {
+    return function () {
+        alert('your choice is ' + fruit);
+    };
+};
+fruits.forEach(function (fruit) {
+    var $li = document.createElement('li');
+    $li.innerText = fruit;
+    $li.addEventListener('click', alertFruitBuilder(fruit));
+    $ul.appendChild($li);
+});
+```
+- **고차함수**: 함수를 인자로 받거나 함수를 반환하는 함수
+`alertFruitBuilder` 함수는 fruit를 인자로 받고 alert함수를 반환하는 '고차함수'이다. 반환된 함수는 외부함수인 `alertFruitBuilder`함수의 fruit 인자를 참조하고 있는 '클로저'이고 별도의 매개변수를 받지 않으므로 `addEventListener`의 콜백함수로 사용될때 이벤트 객체를 받는 인자의 순서도 바뀌지 않으므로 이전 예제의 문제를 해결할 수 있다.
+
+위의 세가지 예제를 통해 각 상황에 맞는 방법을 적용하면 된다.
 
 #### 2.접근 권한 제어(정보 은닉)
+정보 은닉(information hiding)은 어떤 모듈의 내부 로직에 대해 외부로의 노출을 최소화해서 모듈간의 결합도를 낮추고 유연성을 높이고자 하는 현대 프로그래밍 언어의 중요한 개념 중 하나이다. 흔히 접근 권한에는 public, private, protected의 세 종류가 있는데, 각 단어의 의미 그대로 public은 외부에서 접근 가능한 것이고 private은 내부에서만 사용하며 외부에 노출하지 않는 것을 의미한다.
+
+자바스크립트에서는 기본적으로 변수 자체에 접근 권한을 직접 부여하도록 설계돼 있지 않지만, 클로저를 이용해 함수 차원에서 public한 갑과 private한 값을 구분하는 것이 가능하다.
+
+방법은 함수의 `return`을 활용하는 것인데, **공개(public)멤버는 return하고 비공개(private)멤버는 return하지 않음으로써 외부에서의 접근을 막을 수 있다.**
+
+간단한 예시로 '자동차 게임'을 들 수 있다.
+```javascript
+var createCar = function () {
+    var fuel = Math.ceil(Math.random() * 10 + 10);
+    var power = Math.ceil(Math.random() * 3 + 2);
+    var moved = 0;
+    return {
+        get moved () {
+            return moved;
+        },
+        run: function () {
+            var km = Math.ceil(Math.ramdom() * 6);
+            var wasteFuel = km / power;
+            if (fuel < wasteFuel) {
+                console.log('이동불가');
+                return;
+            }
+            fuel -= wasteFuel;
+            moved += km;
+            console.log(km + 'km 이동 (총 ' + moved + 'km). 남은 연료: ' + fuel);
+        }
+    };
+};
+var car = createCar();
+```
+fuel, power 변수는 비공개 멤버로 지정해 외부에서의 접근을 제한했고(자동차 게임의 공정성 확립을 위해) moved 변수는 getter만을 부여함으로써 읽기 전용 속성을 부여했다. 이렇게 함으로써 외부에서는 오직 run메서드를 실행하는 것과 현재의 moved값을 확인하는 두 가지 동작만 할 수 있다.
+
+추가로 메서드를 덮어 씌우는 어뷰징을 막기 위해서는 `Object.feeze()`메서드를 활용해 객체를 동결하고 return하면 된다.
+
+정리하자면 **클로저를 활용해 접근권한을 제어하는 방법**은
+1. 함수에서 지역변수 및 내부함수를 생성한다.
+2. 외부에 접근권한을 주고자 하는 대상들로 구성된 참조형 데이터(대상이 여럿일 때는 객체 또는 배열, 하나일 때는 함수)를 return한다.
+    -> return한 변수들은 공개 멤버가 되고, 그렇지 않은 변수들은 비공개 멤버가 된다.
 
 #### 3.부분 적용 함수
 
