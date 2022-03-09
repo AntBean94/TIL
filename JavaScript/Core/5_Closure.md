@@ -239,5 +239,52 @@ fuel, power 변수는 비공개 멤버로 지정해 외부에서의 접근을 �
     -> return한 변수들은 공개 멤버가 되고, 그렇지 않은 변수들은 비공개 멤버가 된다.
 
 #### 3.부분 적용 함수
+부분 적용 함수(partially applied funtion)란 n개의 인자를 받는 함수에 미리 m개의 인자만 넘겨 기억시켰다가, 나중에 (n-m)개의 인자를 넘기미ㅕㄴ 비로소 원래 함수의 실행 결과를 얻을 수 있게끔 하는 함수이다. this를 바인딩해야 하는 점을 제외하면 앞서 살펴본 bind메서드의 실행결과가 부분 적용 함수이다.
+```javascript
+var add = function () {
+    var result = 0;
+    for (var i = 0; i < arguments.length; i++) {
+        result += arguments[i];
+    }
+    return result;
+};
+var addPartial = add.bind(null, 1, 2, 3, 4, 5);
+console.log(addPartial(6, 7, 8, 9, 10));    // 55
+```
+
+**this에 관여하지 않는 부분적용함수 구현**
+```javascript
+var partial = function () {
+    var originalPartialArgs = arguments;
+    var func = originalPartialArgs[0];
+    if (typeof func !== 'function') {
+        throw new Error('첫 번째 인자가 함수가 아닙니다!');
+    }
+    return function () {
+        var partialArgs = Array.prototype.slice.call(originalPartialArgs, 1);
+        var restArgs = Array.prototype.slice.call(arguments);
+        return func.apply(this, partialArgs.concat(restArgs));
+    }
+}
+
+var add = function () {
+    var result = 0;
+    for (var i = 0; i < arguments.length; i++) {
+        result += arguments[i];
+    }
+    return result;
+};
+
+var addPartial = partial(add, 1, 2, 3, 4, 5);
+console.log(addPartial(6, 7, 8, 9, 10));        // 55
+
+var dog = {
+    name: '강아지',
+    greet: partial(function(prefix, suffix) {
+        return prefix + this.name + suffix;
+    }, '왈왈, ')
+};
+dog.greet('입니다.');       // 왈왈, 강아지입니다.
+```
 
 #### 4.커링 함수
