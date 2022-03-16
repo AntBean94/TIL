@@ -239,7 +239,7 @@ fuel, power 변수는 비공개 멤버로 지정해 외부에서의 접근을 �
     -> return한 변수들은 공개 멤버가 되고, 그렇지 않은 변수들은 비공개 멤버가 된다.
 
 #### 3.부분 적용 함수
-부분 적용 함수(partially applied funtion)란 n개의 인자를 받는 함수에 미리 m개의 인자만 넘겨 기억시켰다가, 나중에 (n-m)개의 인자를 넘기미ㅕㄴ 비로소 원래 함수의 실행 결과를 얻을 수 있게끔 하는 함수이다. this를 바인딩해야 하는 점을 제외하면 앞서 살펴본 bind메서드의 실행결과가 부분 적용 함수이다.
+부분 적용 함수(partially applied funtion)란 n개의 인자를 받는 함수에 미리 m개의 인자만 넘겨 기억시켰다가, 나중에 (n-m)개의 인자를 넘기면 비로소 원래 함수의 실행 결과를 얻을 수 있게끔 하는 함수이다. this를 바인딩해야 하는 점을 제외하면 앞서 살펴본 bind메서드의 실행결과가 부분 적용 함수이다.
 ```javascript
 var add = function () {
     var result = 0;
@@ -251,6 +251,32 @@ var add = function () {
 var addPartial = add.bind(null, 1, 2, 3, 4, 5);
 console.log(addPartial(6, 7, 8, 9, 10));    // 55
 ```
+bind를 사용하면 부분적용함수를 쉽게 구현할 수 있지만 this에 변경이 생기기때문에 메서드에는 사용할 수 없다.
+```javascript
+var dog = {
+    name: '사모예드',
+    greet: function (prefix, suffix) {
+        return prefix + this.name + suffix;
+    }
+}
+
+console.log(dog.greet('왈왈, ', '입니다.'))     // 왈왈, 사모예드입니다.
+var partialGreet = dog.greet.bind(this, '왈왈, ');     // this => global or window (bind로 부분함수를 선언하는 시점의 this로 바뀜)
+console.log(partialGreet('입니다.'))           // 왈왈, undefined입니다.
+
+var dog = {
+    name: '사모예드',
+    greet: function () {
+        var inner = function (prefix, suffix) {
+            return prefix + this.name + suffix
+        }.bind(this, '왈왈, ')
+        return inner
+    }
+}
+
+console.log(dog.greet()('입니다.'))     //  왈왈, 사모예드입니다. (bind로 구현은 가능하다)
+```
+따라서 this에 관여하지 않는 별도의 부분 적용함수를 구현하면 아래와 같다.
 
 **this에 관여하지 않는 부분적용함수 구현**
 ```javascript
@@ -285,6 +311,77 @@ var dog = {
     }, '왈왈, ')
 };
 dog.greet('입니다.');       // 왈왈, 강아지입니다.
+```
+
+**this에 관여하지 않는 부분함수 구현(2) - 부분인자를 원하는 위치에 넣도록 구현**
+```javascript
+Object.defineProperty(window, '_', {
+    value: 'EMPTY_SPACE',
+    writable: false,
+    configurable: false,
+    enumerable: false
+});
+
+var partial2 = function () {
+    var originalPartialArgs = arguments;
+    var func = originalPartialArgs[0];
+    if (typeof func !== 'function') {
+        throw new Error('첫 번째 인자가 함수가 아닙니다.');
+    }
+    return function () {
+        var partialArgs = Array.prototype.slice.call(originalPartialArgs, 1);
+        var restArgs = Array.prototype.slice.call(arguments);
+        for (var i = 0; i < partialArgs.length; i++) {
+            if (partialArgs[i] === _) {
+                partialArgs[i] = restArgs.shift();  // 가장 앞에있는 원소를 뽑아서 반환
+            }
+        }
+        return func.apply(this, partialArgs.concat(restArgs));
+    };
+};
+
+var add = function () {
+    var result = 0;
+    for (var i = 0; i < arguments.length; i++) {
+        result += arguments[i];
+    }
+    return result;
+};
+var addPartial = partial2(add, 1, 2, _, 4, 5, _, _, 8, 9);
+console.log(addPartial(3, 6, 7, 10));   // 55   
+
+var dog = {
+    name: '강아지',
+    greet: partial2(function(prefix, suffix) {
+        return prefix + this.name + suffix;
+    }, '왈왈, ')
+};
+dog.greet(' 배고파요!');
+```
+
+**디바운스(debounce)**: 짧은 시간동안 동일한 이벤트가 많이 발생할 경우 이를 전부 처리하지 않고 처음 또는 마지막에 발생한 이벤트에 대해 한 번만 처리하는 것
+(프런트엔드 성능 최적화에 큰 도움을 주는 기능으로 scroll, wheel, mousemove, resize 등에 적용하기 좋다.) 
+```javascript
+var debounce = function (eventName, func, wait) {
+    var timeoutId = null;
+    return function (event) {
+        var self = this;
+        console.log(eventName, 'event 발생');
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(func.bind(self, event), wait);
+    };
+};
+
+var moveHandler = function (e) {
+    console.log('move event 처리');
+};
+var wheelHandler = function (e) {
+    console.log('wheel event 처리');
+};
+document.body.addEventListener('mousemove', debounce('move', moveHandler, 500));
+document.body.addEventListener('mousewheel', debounce('wheel', wheelHandler, 700));
+
+
 ```
 
 #### 4.커링 함수
