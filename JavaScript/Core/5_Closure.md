@@ -405,3 +405,79 @@ document.body.addEventListener('mousewheel', debounce('wheel', wheelHandler, 700
 ```
 
 #### 4.커링 함수
+커링 함수(currying function)란 여러 개의 인자를 받는 함수를 하나의 인자만 받는 함수로 나눠서 순차적으로 호출될 수 있게 체인 형태로 구성한 것을 말한다.
+
+부분적용함수와 기본적인 맥락은 일치하지만 몇 가지 차이점이 존재한다.
+- 커링은 한 번에 하나의 인자만 전달하는 것을 원칙으로 한다.(부분적용함수는 여러 개의 인자를 전달할 수 있다.)
+- 중간 과정상의 함수를 실행한 결과는 그다음 인자를 받기 위해 대기만 할 뿐으로, 마지막 인자가 전달되기 전까지는 원본 함수가 실행되지 않는다.(부분적용함수는 실행결과를 재실행할 때 원본 함수가 무조건 실행된다.)
+
+예제
+```javascript
+var curry = function (func) {
+    return function (a) {
+        return function (b) {
+            return func(a, b);
+        };
+    };
+};
+
+var getMaxWith10 = curry(Math.max)(10);
+console.log(getMaxWith10(8));   // 10
+console.log(getMaxWith10(25));  // 25
+
+var getMinWith10 = curry(Math.min)(10);
+console.log(getMinWith10(8));   // 8
+console.log(getMinWith10(15));  // 10
+```
+아래와 같이 필요한 인자 개수만큼 함수를 만들어 계속 리턴해주도록 만들수도 있다.
+```javascript
+var curry2 = function (func) {
+    return function (a) {
+        return function (b) {
+            return function (c) {
+                return function (d) {
+                    return function (e) {
+                        return func(a, b, c, d, e);
+                    };
+                };
+            };
+        };
+    };
+};
+var getMax = curry2(Math.max);
+console.log(getMax(1)(2)(3)(4)(5));     // 5
+```
+단, 위와같이 작성하면 가독성이 떨어지고 코드의양이 증가하므로 화살표함수를 사용해서 작성하면 더 간결하게 표현할 수 있다.
+```javascript
+var curry3 = func => a => b => c => d => e => func(a, b, c, d, e);
+```
+
+당장 필요한 정보만 받아서 전달하고 또 필요한 정보가 들어오면 전달하는 이러한 방식을 함수형 프로그래밍에서는 '지연실행'(lazy excution)이라고 한다.
+함수를 원하는 시점까지 지연시켰다가 실행하는 것이 필요한 상황에서 요긴하게 쓰일 수 있으며, 프로젝트에서 자주 쓰이는 함수의 매개변수가 항상 비슷하고 일부만 바뀌는 경우에도 유용하게 쓰일 수 있다.
+```javascript
+var getInformation = function (baseUrl) {   // 서버에 요청할 주소의 기본 Url
+    return function (path) {                // path 값
+        return function (id) {              // id 값
+            return fetch(baseUrl + path + '/' + id);    // 실제 서버에 정보를 요청
+        };
+    };
+};
+// ES6
+var getInformation2 = baseUrl => path => id => fetch(baseUrl + path + '/' + id);
+```
+
+다음 예시는 Flux 아키텍처의 구현체 중 하나인 Redux의 미들웨어(middleware)에 쓰인 커링 함수이다.
+```javascript
+// Redux Middleware 'Logger'
+const logger = store => next => action => {
+    console.log('dispatching', action);
+    console.log('next stage', store.getState());
+    return next(action);
+};
+// Redux Middleware 'thunk'
+const thunk = store => next => action => {
+    return typeof action === 'function'
+        ? action(dispatch, store.getState)
+        : next(action);
+};
+```
