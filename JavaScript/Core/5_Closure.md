@@ -274,7 +274,7 @@ var dog = {
     }
 }
 
-console.log(dog.greet()('입니다.'))     //  왈왈, 사모예드입니다. (bind로 구현은 가능하다)
+console.log(dog.greet()('입니다.'))     //  왈왈, 사모예드입니다. (bind로 구현은 가능하다, 재활용이 안됨)
 ```
 따라서 this에 관여하지 않는 별도의 부분 적용함수를 구현하면 아래와 같다.
 
@@ -358,6 +358,28 @@ var dog = {
 };
 dog.greet(' 배고파요!');
 ```
+예시(ES5)에서는 '_'를 '비워놓음'으로 사용하기 위해 전역공간을 침범했지만, ES6에서는 Symbol.for를 활용할 수 있다.
+
+**Symbol.for** 메서드는 전역 심볼공간에 인자로 넘어온 문자열이 이미 있으면 해당 값을 참조하고, 선언돼 있지 않으면 새로 만드는 방식으로, 어디서든 접근 가능하면서 유일무이한 상수를 만들고자 할 때 적합하다.
+**예시**
+```javascript
+var partial3 = function () {
+    // ...생략...
+    return function () {
+        // ...생략...
+        for(var i = 0; i < partialArgs.length; i++) {
+            if (partialArgs[i] === Symbol.for('EMPTY_SPACE')) {
+                partialArgs[i] = restArgs.shift();
+            }
+        }
+        return func.apply(this, partialArgs.concat(restArgs))
+    }
+}
+
+var _ = Symbol.for('EMPTY_SPACE');
+var addPartial = partial3(add, 1, 2, _, 4, 5, _)
+console.log(...)
+```
 
 **디바운스(debounce)**: 짧은 시간동안 동일한 이벤트가 많이 발생할 경우 이를 전부 처리하지 않고 처음 또는 마지막에 발생한 이벤트에 대해 한 번만 처리하는 것
 (프런트엔드 성능 최적화에 큰 도움을 주는 기능으로 scroll, wheel, mousemove, resize 등에 적용하기 좋다.) 
@@ -380,8 +402,6 @@ var wheelHandler = function (e) {
 };
 document.body.addEventListener('mousemove', debounce('move', moveHandler, 500));
 document.body.addEventListener('mousewheel', debounce('wheel', wheelHandler, 700));
-
-
 ```
 
 #### 4.커링 함수
