@@ -22,7 +22,7 @@ class ApplicationContextInfoTest {
     }
 
     @Test
-    @DisplayName("애플리케이션 빈 등록하기")
+    @DisplayName("애플리케이션 빈 출력하기")
     void findAllApplicationBean() {
         String[] beanDefinitionNames = ac.getBeanDefinitionNames();
         for (String beanDefinitionName : beanDefinitionNames) {
