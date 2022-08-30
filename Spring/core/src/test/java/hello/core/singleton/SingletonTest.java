@@ -5,6 +5,7 @@ import hello.core.member.MemberService;
 import hello.core.member.MemberServiceImpl;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import static org.assertj.core.api.AssertionsForClassTypes.*;
@@ -57,7 +58,7 @@ public class SingletonTest {
     @DisplayName("스프링 컨테이너와 싱글톤")
     void springContainer() {
 
-        AnnotationConfigApplicationContext ac = new AnnotationConfigApplicationContext(AppConfig.class);
+        ApplicationContext ac = new AnnotationConfigApplicationContext(AppConfig.class);
 
         // 1. 조회: 호출할 때 마다 같은 객체를 반환
         MemberService memberService1 = ac.getBean("memberService", MemberService.class);
