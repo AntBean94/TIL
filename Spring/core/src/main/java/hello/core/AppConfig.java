@@ -17,16 +17,27 @@ public class AppConfig {
 
     @Bean
     public MemberService memberService() {
+
+        // memberRepository 호출 횟수 확인을 위한 로그
+        System.out.println("call memberService");
+
         return new MemberServiceImpl(memberRepository());
     }
 
     @Bean
     public MemberRepository memberRepository() {
+
+        // memberRepository 호출 횟수 확인을 위한 로그
+        System.out.println("call memberRepository");
+
         return new MemoryMemberRepository();
     }
 
     @Bean
     public OrderService orderService() {
+
+        // memberRepository 호출 횟수 확인을 위한 로그
+        System.out.println("call orderService");
 
         return new OrderServiceImpl(
                 memberRepository(),
