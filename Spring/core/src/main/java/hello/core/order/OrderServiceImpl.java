@@ -46,6 +46,7 @@ public class OrderServiceImpl implements OrderService {
     // - setter라 불리는 필드의 값을 변경하는 수정자 메서드를 통해서 의존관계를 주입하는 방법이다.
     // - 선택, 변경 가능성이 있는 의존관계에서 사용
     // - 자바빈 프로퍼티 규약의 수정자 메서드 방식을 사용하는 방법
+    // - 컴파일 단계에서 오류를 반환하지 않기때문에 나중에 nullPointException이 발생할 수 있다.(따라서, 필수의존관계라면 생성자주입을 선택한다.)
 //    private MemberRepository memberRepository;
 //    private DiscountPolicy discountPolicy;
 
