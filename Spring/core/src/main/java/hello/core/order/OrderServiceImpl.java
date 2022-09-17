@@ -3,10 +3,12 @@ package hello.core.order;
 import hello.core.discount.DiscountPolicy;
 import hello.core.member.Member;
 import hello.core.member.MemberRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
 
 
@@ -32,14 +34,14 @@ public class OrderServiceImpl implements OrderService {
     // - 생성자 호출 시점에 딱 1번만 호출되는것이 보장된다.
     // - 불변, 필수 의존관계에 사용
     // - 생성자가 1개인경우 Autowired 생략 가능
-    private final MemberRepository memberRepository;
-    private final DiscountPolicy discountPolicy;
-
-    @Autowired
-    public OrderServiceImpl(MemberRepository memberRepository, DiscountPolicy discountPolicy) {
-        this.memberRepository = memberRepository;
-        this.discountPolicy = discountPolicy;
-    }
+//    private final MemberRepository memberRepository;
+//    private final DiscountPolicy discountPolicy;
+//
+//    @Autowired
+//    public OrderServiceImpl(MemberRepository memberRepository, DiscountPolicy discountPolicy) {
+//        this.memberRepository = memberRepository;
+//        this.discountPolicy = discountPolicy;
+//    }
 
 
     // 2. 수정자 주입
@@ -85,6 +87,10 @@ public class OrderServiceImpl implements OrderService {
 //        this.discountPolicy = discountPolicy;
 //    }
 
+
+    // 최신 트렌드 (lombok - requiredArgsConstructor 사용, final 키워드가 붙어있으면 생성자를 자동으로 추가해준다.)
+    private final MemberRepository memberRepository;
+    private final DiscountPolicy discountPolicy;
 
     @Override
     public Order createOrder(Long memberId, String itemName, int itemPrice) {
