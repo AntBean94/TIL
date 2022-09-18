@@ -3,6 +3,9 @@ package hello.core.lifecycle;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+
 //public class NetworkClient implements InitializingBean, DisposableBean {
 public class NetworkClient {
 
@@ -32,6 +35,7 @@ public class NetworkClient {
 
 //    @Override
 //    public void afterPropertiesSet() throws Exception {
+    @PostConstruct
     public void init() throws Exception {
 //        System.out.println("NetworkClient.afterPropertiesSet");
         System.out.println("NetworkClient.init");
@@ -41,6 +45,7 @@ public class NetworkClient {
 
 //    @Override
 //    public void destroy() throws Exception {
+    @PreDestroy
     public void close() throws Exception {
 //        System.out.println("NetworkClient.destroy");
         System.out.println("NetworkClient.close");
