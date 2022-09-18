@@ -1,5 +1,6 @@
 package hello.core.order;
 
+import hello.core.annotation.MainDiscountPolicy;
 import hello.core.discount.DiscountPolicy;
 import hello.core.member.Member;
 import hello.core.member.MemberRepository;
@@ -38,7 +39,7 @@ public class OrderServiceImpl implements OrderService {
 //    private final DiscountPolicy discountPolicy;
 //
 //    @Autowired
-//    public OrderServiceImpl(MemberRepository memberRepository, DiscountPolicy discountPolicy) {
+//    public OrderServiceImpl(MemberRepository memberRepository, @MainDiscountPolicy DiscountPolicy discountPolicy) {
 //        this.memberRepository = memberRepository;
 //        this.discountPolicy = discountPolicy;
 //    }
@@ -90,7 +91,7 @@ public class OrderServiceImpl implements OrderService {
 
     // 최신 트렌드 (lombok - requiredArgsConstructor 사용, final 키워드가 붙어있으면 생성자를 자동으로 추가해준다.)
     private final MemberRepository memberRepository;
-    private final DiscountPolicy discountPolicy;
+    private final @MainDiscountPolicy DiscountPolicy discountPolicy;
 
     @Override
     public Order createOrder(Long memberId, String itemName, int itemPrice) {
