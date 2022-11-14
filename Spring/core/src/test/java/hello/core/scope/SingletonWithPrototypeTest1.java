@@ -3,6 +3,7 @@ package hello.core.scope;
 import lombok.RequiredArgsConstructor;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Scope;
@@ -40,17 +41,28 @@ public class SingletonWithPrototypeTest1 {
 
     }
 
-//    @RequiredArgsConstructor
+//    static class ClientBean {
+//
+//        private final PrototypeBean prototypeBean;  // 생성시점에 주입
+//
+//        @Autowired
+//        public ClientBean(PrototypeBean prototypeBean) {
+//            this.prototypeBean = prototypeBean;
+//        }
+//
+//        public int logic() {
+//            prototypeBean.addCount();
+//            return prototypeBean.getCount();
+//        }
+//    }
+
     static class ClientBean {
 
-        private final PrototypeBean prototypeBean;  // 생성시점에 주입
-
         @Autowired
-        public ClientBean(PrototypeBean prototypeBean) {
-            this.prototypeBean = prototypeBean;
-        }
+        private ObjectProvider<PrototypeBean> prototypeBeanProvider;    // dependency lookup (DL)
 
         public int logic() {
+            PrototypeBean prototypeBean = prototypeBeanProvider.getObject();
             prototypeBean.addCount();
             return prototypeBean.getCount();
         }
