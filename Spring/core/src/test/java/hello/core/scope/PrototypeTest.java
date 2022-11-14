@@ -25,6 +25,9 @@ public class PrototypeTest {
         assertThat(prototypeBean1).isNotSameAs(prototypeBean2);
 
         ac.close(); // 종료메서드를 호출하지 않는것을 확인할 수 있다.
+
+//        prototypeBean1.close();
+//        prototypeBean2.close();
     }
 
     @Scope("prototype")
