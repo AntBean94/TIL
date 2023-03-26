@@ -25,6 +25,7 @@ public class RequestParamServlet extends HttpServlet {
         String[] usernames = request.getParameterValues("username"); //복수 파라미터 조회
      */
 
+    @Override
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         System.out.println("[전체 파라미터 조회] - start");
 
