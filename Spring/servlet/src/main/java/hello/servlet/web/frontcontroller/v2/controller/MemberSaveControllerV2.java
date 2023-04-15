@@ -25,6 +25,6 @@ public class MemberSaveControllerV2 implements ControllerV2 {
 
         request.setAttribute("member", member);
 
-        return new MyView("/WEB-INF/members/save.jsp");
+        return new MyView("/WEB-INF/views/save-result.jsp");
     }
 }
