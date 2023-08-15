@@ -33,6 +33,11 @@ public class BasicItemController {
         return "basic/item";
     }
 
+    @GetMapping("/add")
+    public String addForm() {
+        return "basic/addForm";
+    }
+
     /*
     * 테스트 데이터 추가
     * PostConstruct 어노테이션 => 스프링 빈 생명주기 참고
