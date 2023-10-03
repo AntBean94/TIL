@@ -21,6 +21,7 @@ public class MemberRepositoryTest {
 
     @Autowired MemberRepository memberRepository;
 
+    // tdd template 추가
     @Test
     @Transactional
     public void testMember() {
