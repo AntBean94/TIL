@@ -14,7 +14,7 @@ import java.util.List;
 // 여러 엔티티의 컬럼들을 하나의 테이블에 설계하는 방식 사용
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "dtype")
-@Getter
+@Getter @Setter
 public abstract class Item {
 
     @Id @GeneratedValue
