@@ -3,6 +3,7 @@ package jpabook.jpashop.web;
 import jpabook.jpashop.domain.items.Book;
 import jpabook.jpashop.domain.items.Item;
 import jpabook.jpashop.service.ItemService;
+import jpabook.jpashop.service.ItemUpdateDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -34,7 +35,6 @@ public class ItemController {
         book.setStockQuantity(form.getStockQuantity());
         book.setAuthor(form.getAuthor());
         book.setIsbn(form.getIsbn());
-
         itemService.saveItem(book);
         return "redirect:/items";
     }
@@ -78,15 +78,24 @@ public class ItemController {
     @PostMapping(value = "items/{itemId}/edit")
     public String updateItem(@ModelAttribute("form") BookForm form) {
 
-        Book book = new Book();
-        book.setId(form.getId());
-        book.setName(form.getName());
-        book.setPrice(form.getPrice());
-        book.setStockQuantity(form.getStockQuantity());
-        book.setAuthor(form.getAuthor());
-        book.setIsbn(form.getIsbn());
+        // 병합(merge)을 통해 업데이트하기
+//        Book book = new Book();
+//        book.setId(form.getId());
+//        book.setName(form.getName());
+//        book.setPrice(form.getPrice());
+//        book.setStockQuantity(form.getStockQuantity());
+//        book.setAuthor(form.getAuthor());
+//        book.setIsbn(form.getIsbn());
+//        itemService.saveItem(book);
 
-        itemService.saveItem(book);
+        // 변경감지
+        itemService.updateItem(form.getId(), ItemUpdateDTO.builder()
+                        .name(form.getName())
+                        .price(form.getPrice())
+                        .stockQuantity(form.getStockQuantity())
+                        .build()
+        );
+
         return "redirect:/items";
     }
 }
