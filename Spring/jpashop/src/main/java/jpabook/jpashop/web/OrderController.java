@@ -52,7 +52,7 @@ public class OrderController {
     }
 
     @PostMapping(value = "/orders/{orderId}/cancel")
-    public String cancel(@RequestParam("orderId") Long orderId) {
+    public String cancel(@PathVariable("orderId") Long orderId) {
 
         orderService.cancelOrder(orderId);
 
