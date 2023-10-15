@@ -4,7 +4,6 @@ import jpabook.jpashop.domain.Member;
 import jpabook.jpashop.domain.Order;
 import jpabook.jpashop.domain.OrderSearch;
 import jpabook.jpashop.domain.items.Item;
-import jpabook.jpashop.repository.OrderRepository;
 import jpabook.jpashop.service.ItemService;
 import jpabook.jpashop.service.MemberService;
 import jpabook.jpashop.service.OrderService;
@@ -52,5 +51,12 @@ public class OrderController {
         return "order/orderList";
     }
 
+    @PostMapping(value = "/orders/{orderId}/cancel")
+    public String cancel(@RequestParam("orderId") Long orderId) {
+
+        orderService.cancelOrder(orderId);
+
+        return "redirect:/orders";
+    }
 
 }
