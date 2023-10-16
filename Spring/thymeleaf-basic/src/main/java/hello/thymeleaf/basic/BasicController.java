@@ -98,6 +98,22 @@ public class BasicController {
         return "basic/link";
     }
 
+    /**
+     * 타임리프에서 문자 리터럴은 항상 '(작은 따옴표)로 감싸야 한다.
+     * 하지만, 아래의 룰에 따라 공백없이 쭉 이어지는 문자에 대해서는 하나의 의미있는 토큰으로 인지해서
+     * 작은 따옴표를 생략할 수 있다.
+     * rule: A-Z, a-z, 0-9, [], ., -, _
+     *
+     * 위의 룰이 아닌 케이스(공백이 포함된 문장 등)에는 작은 따옴표를 생략하면 예외발생한다.
+     * 따라서 리터럴 대체 문법을 사용하자.
+     * <span th:text="|hello ${data}|">
+     */
+    @GetMapping(value = "literal")
+    public String literal(Model model) {
+        model.addAttribute("data", "Spring!");
+        return "basic/literal";
+    }
+
     @Component("helloBean")
     static class HelloBean {
         public String hello(String data) {
