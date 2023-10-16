@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -68,13 +69,6 @@ public class BasicController {
         return "basic/basic-objects";
     }
 
-    @Component("helloBean")
-    static class HelloBean {
-        public String hello(String data) {
-            return "Hello" + data;
-        }
-    }
-
     /**
      * 스프링부트 3.0 이상 버전이라면 다음과 같이 사용한다.
      * - 기본객체(request, response, session, servletContext)를 지원하지 않음.
@@ -91,6 +85,18 @@ public class BasicController {
         return "basic/basic-objects";
     }
 
+    @GetMapping(value = "/date")
+    public String date(Model model) {
+        model.addAttribute("localDateTime", LocalDateTime.now());
+        return "basic/date";
+    }
+
+    @Component("helloBean")
+    static class HelloBean {
+        public String hello(String data) {
+            return "Hello" + data;
+        }
+    }
 
     @Data
     static class User {
