@@ -132,6 +132,12 @@ public class BasicController {
         return "basic/each";
     }
 
+    @GetMapping("/condition")
+    public String condition(Model model) {
+        addUser(model);
+        return "basic/condition";
+    }
+
     @Component("helloBean")
     static class HelloBean {
         public String hello(String data) {
