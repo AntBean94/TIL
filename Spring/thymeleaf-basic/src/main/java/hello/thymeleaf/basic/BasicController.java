@@ -121,6 +121,11 @@ public class BasicController {
         return "basic/operation";
     }
 
+    @GetMapping("/attribute")
+    public String attribute() {
+        return "basic/attribute";
+    }
+
     @Component("helloBean")
     static class HelloBean {
         public String hello(String data) {
@@ -138,6 +143,15 @@ public class BasicController {
             this.username = username;
             this.age = age;
         }
+    }
+
+    private void addUser(Model model) {
+        List<User> list = new ArrayList<>();
+        list.add(new User("userA", 10));
+        list.add(new User("userB", 20));
+        list.add(new User("userC", 30));
+
+        model.addAttribute("users", list);
     }
 
 
